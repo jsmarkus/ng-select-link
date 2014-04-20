@@ -6,16 +6,26 @@ angular
     'DemoCtrl', [
       '$scope',
       '$q',
-      function($scope, $q) {
+      '$timeout',
+      function($scope, $q, $timeout) {
+        var authors = [{
+          id: 1,
+          name: 'Salinger'
+        }, {
+          id: 2,
+          name: 'Bradburry'
+        }];
+
         var authorsToBooks = {
-          'Salinger': [{
+          1: [{
             isbn: '9788976100146',
             title: 'The Catcher in the Rye'
           }, {
             isbn: '9780553146646',
             title: 'Nine Stories'
-          }, ],
-          'Bradbury': [{
+          }],
+
+          2: [{
             isbn: '9789703707034',
             title: 'Fahrenheit 451'
           }, {
@@ -24,13 +34,15 @@ angular
           }]
         };
 
-        $scope.authors = ['Salinger', 'Bradbury'];
+        $scope.authors = authors;
 
-        $scope.selectedAuthor = 'Salinger';
+        $scope.selectedAuthor = 1;
 
         $scope.getBooksByAuthor = function(author) {
           var def = $q.defer();
-          def.resolve(authorsToBooks[author]);
+          $timeout(function() {
+            def.resolve(authorsToBooks[author]);
+          }, 500);
           return def.promise;
         };
       }

@@ -7,7 +7,7 @@
 
       <select
         ng-model="selectedAuthor"
-        ng-options="_ for _ in authors"
+        ng-options="author.id as author.name for author in authors"
         ></select>
 
       <select
@@ -17,7 +17,7 @@
         ng-select-link-function="getBooksByAuthor"
         ></select>
 
-    Selected book is: {{selectedBook}}
+    Selected book ISBN is: {{selectedBook}}
 
     </div>
 
