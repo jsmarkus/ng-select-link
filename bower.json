@@ -1,0 +1,19 @@
+{
+  "name": "ng-select-link",
+  "main": "ng-select-link.js",
+  "version": "0.0.0",
+  "authors": [
+    "Mark <me@jsman.ru>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.2.16"
+  }
+}
