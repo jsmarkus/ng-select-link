@@ -3,8 +3,10 @@ angular.module('NGSelectLink', []);
 angular
   .module('NGSelectLink')
   .directive(
-    'ngSelectLink', ['$parse',
-      function($parse) {
+    'ngSelectLink', [
+      '$parse',
+      '$q',
+      function($parse, $q) {
         //.......................000011111111110000000000022222222220000000000000000000003333333333000000000000004444444444444440000000005555555555555550000000666666666666666000000000000000777777777700000000000000000008888888888
         var NG_OPTIONS_REGEXP = /^\s*([\s\S]+?)(?:\s+as\s+([\s\S]+?))?(?:\s+group\s+by\s+([\s\S]+?))?\s+for\s+(?:([\$\w][\$\w]*)|(?:\(\s*([\$\w][\$\w]*)\s*,\s*([\$\w][\$\w]*)\s*\)))\s+in\s+([\s\S]+?)(?:\s+track\s+by\s+([\s\S]+?))?$/;
 
@@ -50,22 +52,34 @@ angular
           };
         }
 
-        function verifyIntegrity(scope, opt, items, modelFn) {
+        function findItem(scope, opt, modelFn) {
           var model = modelFn(scope);
-          var found = false;
+          var items = opt.valuesFn(scope);
+          if (!items) {
+            return;
+          }
           var context = {};
           for (var i = 0; i < items.length; i++) {
             var item = items[i];
             context[opt.valueName] = item;
             var val = opt.valueFn(context);
             if (val === model) {
-              found = true;
-              break;
+              return item;
             }
           }
-          if (!found) {
+          return undefined;
+        }
+
+        function verifyIntegrity(scope, opt, items, modelFn) {
+          var item = findItem(scope, opt, modelFn);
+          if (!item) {
             modelFn.assign(scope, undefined);
           }
+        }
+
+        function fillItem(scope, opt, modelFn, fullFn) {
+          var item = findItem(scope, opt, modelFn);
+          fullFn.assign(scope, item);
         }
 
         return {
@@ -82,14 +96,24 @@ angular
             var modelAttr = attrs.ngModel;
             var modelFn = $parse(modelAttr);
 
+            var fullAttr = attrs.ngSelectLinkItem;
+            var fullFn = $parse(fullAttr);
+
             scope.$watch(link.keyFn, onKeyChanged);
+            scope.$watch(modelFn, onModelChanged);
+
+
+            function onModelChanged() {
+              fillItem(scope, opt, modelFn, fullFn);
+            }
 
             function onKeyChanged() {
               var loader = link.loadFn(scope);
-              var promise = loader.call(scope, link.keyFn(scope));
+              var promise = $q.when(loader.call(scope, link.keyFn(scope)));
               promise.then(function(items) {
                 opt.valuesFn.assign(scope, items);
                 verifyIntegrity(scope, opt, items, modelFn);
+                fillItem(scope, opt, modelFn, fullFn);
               });
             }
           }

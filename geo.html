@@ -1,0 +1,39 @@
+<html>
+<head>
+    <title></title>
+</head>
+<body ng-app="demo">
+    <div ng-controller="DemoCtrl">
+
+      <select
+        ng-model="selectedState"
+        ng-options="state.woeid as state.name for state in states"
+        ng-select-link="getStates(true)"
+        ng-select-link-item="fullState"
+        ></select>
+
+      <select
+        ng-model="selectedCity"
+        ng-options="city.woeid as city.name for city in cities"
+        ng-select-link="getCityByState(selectedState)"
+        ng-select-link-item="fullCity"
+        ></select>
+
+    <p>Selected state is: {{selectedState}}</p>
+    <p>Selected city is: {{selectedCity}}</p>
+
+    <pre>
+<b>fullState</b> = {{fullState | json}}
+    </pre>
+
+    <pre>
+<b>fullCity</b> = {{fullCity | json}}
+    </pre>
+
+    </div>
+
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="ng-select-link.js"></script>
+    <script src="geo.js"></script>
+</body>
+</html>
