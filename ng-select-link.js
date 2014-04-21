@@ -3,32 +3,97 @@ angular.module('NGSelectLink', []);
 angular
   .module('NGSelectLink')
   .directive(
-    'ngSelectLink',
-    function() {
-      return {
-        restrict: 'A',
-        priority: 1000,
-        compile: function(element, attrs, transclude) {
-          var optionsAttr = attrs.ngSelectLink;
-          var getterAttr = attrs.ngSelectLinkFunction;
-          var toAttr = attrs.ngSelectLinkTo;
+    'ngSelectLink', ['$parse',
+      function($parse) {
+        //.......................000011111111110000000000022222222220000000000000000000003333333333000000000000004444444444444440000000005555555555555550000000666666666666666000000000000000777777777700000000000000000008888888888
+        var NG_OPTIONS_REGEXP = /^\s*([\s\S]+?)(?:\s+as\s+([\s\S]+?))?(?:\s+group\s+by\s+([\s\S]+?))?\s+for\s+(?:([\$\w][\$\w]*)|(?:\(\s*([\$\w][\$\w]*)\s*,\s*([\$\w][\$\w]*)\s*\)))\s+in\s+([\s\S]+?)(?:\s+track\s+by\s+([\s\S]+?))?$/;
 
-          var sourceAttr = optionsAttr.split(' in ')[1]; //TODO: very lammer, only for proto
+        var LINK_REGEXP = /^\s*([\s\S]+?)\(([\s\S]+?)\)\s*$/;
 
-          attrs.ngOptions = optionsAttr;
+        function parseOptions(optionsExpr) {
+          var match = optionsExpr.match(NG_OPTIONS_REGEXP);
+          if (!match) {
+            throw new Error('illegal options'); //TODO
+          }
+
+          var displayFn = $parse(match[2] || match[1]),
+            valueName = match[4] || match[6],
+            keyName = match[5],
+            groupByFn = $parse(match[3] || ''),
+            valueFn = $parse(match[2] ? match[1] : valueName),
+            valuesFn = $parse(match[7]),
+            track = match[8],
+            trackFn = track ? $parse(match[8]) : null;
 
           return {
-            post: function(scope, element, attrs) {
-              scope.$watch(toAttr, onModelChanged);
-
-              function onModelChanged(model) {
-                var promise = scope[getterAttr].call(scope, model);
-                promise.then(function(items) {
-                  scope[sourceAttr] = items;
-                });
-              }
-            }
+            displayFn: displayFn,
+            valueName: valueName,
+            keyName: keyName,
+            groupByFn: groupByFn,
+            valueFn: valueFn,
+            valuesFn: valuesFn,
+            // track: track,
+            trackFn: trackFn
           };
         }
-      };
-    });
+
+        function parseLink(linkExpr) {
+          var match = linkExpr.match(LINK_REGEXP);
+          if (!match) {
+            throw new Error('illegal link'); //TODO
+          }
+          var load = match[1];
+          var key = match[2];
+          return {
+            loadFn: $parse(load),
+            keyFn: $parse(key)
+          };
+        }
+
+        function verifyIntegrity(scope, opt, items, modelFn) {
+          var model = modelFn(scope);
+          var found = false;
+          var context = {};
+          for (var i = 0; i < items.length; i++) {
+            var item = items[i];
+            context[opt.valueName] = item;
+            var val = opt.valueFn(context);
+            if (val === model) {
+              found = true;
+              break;
+            }
+          }
+          if (!found) {
+            modelFn.assign(scope, undefined);
+          }
+        }
+
+        return {
+          restrict: 'A',
+
+          link: function(scope, element, attrs) {
+
+            var optionsAttr = attrs.ngOptions;
+            var opt = parseOptions(optionsAttr);
+
+            var linkAttr = attrs.ngSelectLink;
+            var link = parseLink(linkAttr);
+
+            var modelAttr = attrs.ngModel;
+            var modelFn = $parse(modelAttr);
+
+            scope.$watch(link.keyFn, onKeyChanged);
+
+            function onKeyChanged() {
+              var loader = link.loadFn(scope);
+              var promise = loader.call(scope, link.keyFn(scope));
+              promise.then(function(items) {
+                opt.valuesFn.assign(scope, items);
+                verifyIntegrity(scope, opt, items, modelFn);
+              });
+            }
+          }
+
+        };
+      }
+    ]);

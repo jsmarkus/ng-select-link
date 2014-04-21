@@ -12,9 +12,8 @@
 
       <select
         ng-model="selectedBook"
-        ng-select-link="book.isbn as book.title for book in books"
-        ng-select-link-to="selectedAuthor"
-        ng-select-link-function="getBooksByAuthor"
+        ng-options="book.isbn as book.title for book in books"
+        ng-select-link="getBooksByAuthor(selectedAuthor)"
         ></select>
 
     Selected book ISBN is: {{selectedBook}}

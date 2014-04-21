@@ -41,7 +41,12 @@ angular
         $scope.getBooksByAuthor = function(author) {
           var def = $q.defer();
           $timeout(function() {
-            def.resolve(authorsToBooks[author]);
+            var items = angular.copy(authorsToBooks[author]);
+            items.unshift({
+              isbn: undefined,
+              title: 'Please select a book...'
+            });
+            def.resolve(items);
           }, 500);
           return def.promise;
         };
