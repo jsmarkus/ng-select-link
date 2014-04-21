@@ -46,6 +46,6 @@ To add a linked `<select>` we can write the following:
 ```
 
 An expression: `ng-select-link="getBooksByAuthor(selectedAuthor)"` tells the following:
-"when `selectedAuthor` is changed, call `getBooksByAuthor(selectedAuthor)`, then use its promise result to fill the `<select>` options".
+>>"when `selectedAuthor` is changed, call `getBooksByAuthor(selectedAuthor)`, then fill the `<select>` options with the result".
 
-For the full example see `demo.js` and `demo.html` files.
+For the full example see [demo](demo.html) or [geo](geo.html).
