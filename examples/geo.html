@@ -10,6 +10,7 @@
         ng-options="state.woeid as state.name for state in states"
         ng-select-link="getStates(true)"
         ng-select-link-item="fullState"
+        ng-select-link-empty="'Select state...'"
         ></select>
 
       <select
@@ -17,6 +18,7 @@
         ng-options="city.woeid as city.name for city in cities"
         ng-select-link="getCityByState(selectedState)"
         ng-select-link-item="fullCity"
+        ng-select-link-empty="'Select city...'"
         ></select>
 
     <p>Selected state is: {{selectedState}}</p>
