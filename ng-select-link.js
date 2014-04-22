@@ -110,6 +110,9 @@ angular
             var emptyAttr = attrs.ngSelectLinkEmpty;
             var emptyFn = $parse(emptyAttr);
 
+            var clearAttr = attrs.ngSelectLinkIsClear;
+            var clearFn = $parse(clearAttr);
+
             scope.$watch(link.keyFn, onKeyChanged);
             scope.$watch(modelFn, onModelChanged);
 
@@ -127,6 +130,14 @@ angular
             }
 
             function onItemsLoaded(items) {
+              items = items || [];
+              if (clearAttr) {
+                if (!items.length) {
+                  clearFn.assign(scope, true);
+                } else {
+                  clearFn.assign(scope, false);
+                }
+              }
               if (emptyAttr) {
                 var empty = createEmptyItem(scope, opt, emptyFn);
                 items = Array.prototype.slice.call(items);

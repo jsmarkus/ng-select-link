@@ -14,13 +14,16 @@
         ></select>
 
       <select
+        ng-show="!thereIsNoCities"
         ng-model="selectedCity"
         ng-options="city.woeid as city.name for city in cities"
         ng-select-link="getCityByState(selectedState)"
         ng-select-link-item="fullCity"
         ng-select-link-empty="'Select city...'"
+        ng-select-link-is-clear="thereIsNoCities"
         ></select>
 
+    <p ng-if="thereIsNoCities"><strong>No cities available in {{fullState.name}}</strong></p>
     <p>Selected state is: {{selectedState}}</p>
     <p>Selected city is: {{selectedCity}}</p>
 
