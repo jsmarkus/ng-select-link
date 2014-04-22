@@ -104,7 +104,9 @@ angular
 
 
             function onModelChanged() {
-              fillItem(scope, opt, modelFn, fullFn);
+              if (fullAttr) {
+                fillItem(scope, opt, modelFn, fullFn);
+              }
             }
 
             function onKeyChanged() {
@@ -113,7 +115,9 @@ angular
               promise.then(function(items) {
                 opt.valuesFn.assign(scope, items);
                 verifyIntegrity(scope, opt, items, modelFn);
-                fillItem(scope, opt, modelFn, fullFn);
+                if (fullAttr) {
+                  fillItem(scope, opt, modelFn, fullFn);
+                }
               });
             }
           }
