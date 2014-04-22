@@ -82,6 +82,14 @@ angular
           fullFn.assign(scope, item);
         }
 
+        function createEmptyItem(scope, opt, emptyFn) {
+          var item = {};
+          opt.displayFn.assign(item, emptyFn(scope));
+          opt.valueFn.assign(item, undefined);
+          item = item[opt.valueName];
+          return item;
+        }
+
         return {
           restrict: 'A',
 
@@ -99,6 +107,9 @@ angular
             var fullAttr = attrs.ngSelectLinkItem;
             var fullFn = $parse(fullAttr);
 
+            var emptyAttr = attrs.ngSelectLinkEmpty;
+            var emptyFn = $parse(emptyAttr);
+
             scope.$watch(link.keyFn, onKeyChanged);
             scope.$watch(modelFn, onModelChanged);
 
@@ -112,13 +123,20 @@ angular
             function onKeyChanged() {
               var loader = link.loadFn(scope);
               var promise = $q.when(loader.call(scope, link.keyFn(scope)));
-              promise.then(function(items) {
-                opt.valuesFn.assign(scope, items);
-                verifyIntegrity(scope, opt, items, modelFn);
-                if (fullAttr) {
-                  fillItem(scope, opt, modelFn, fullFn);
-                }
-              });
+              promise.then(onItemsLoaded);
+            }
+
+            function onItemsLoaded(items) {
+              if (emptyAttr) {
+                var empty = createEmptyItem(scope, opt, emptyFn);
+                items = Array.prototype.slice.call(items);
+                items.unshift(empty);
+              }
+              opt.valuesFn.assign(scope, items);
+              verifyIntegrity(scope, opt, items, modelFn);
+              if (fullAttr) {
+                fillItem(scope, opt, modelFn, fullFn);
+              }
             }
           }
 
