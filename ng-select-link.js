@@ -114,7 +114,7 @@ angular
           var clearAttr = attrs.ngSelectLinkIsClear;
           var clearFn = $parse(clearAttr);
 
-          scope.$watch(link.keyFn, onKeyChanged);
+          scope.$watch(link.keyFn, onKeyChanged, true);
           scope.$watch(modelFn, onModelChanged);
 
 
