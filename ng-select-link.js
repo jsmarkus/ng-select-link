@@ -144,7 +144,7 @@ angular
                 clearFn.assign(scope, false);
               }
             }
-            if (emptyAttr) {
+            if (emptyAttr && emptyFn(scope)) {
               var empty = createEmptyItem(scope, opt, emptyFn);
               items = Array.prototype.slice.call(items);
               items.unshift(empty);
