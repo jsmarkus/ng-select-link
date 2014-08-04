@@ -114,7 +114,7 @@ angular
           var clearAttr = attrs.ngSelectLinkIsClear;
           var clearFn = $parse(clearAttr);
 
-          scope.$watch(link.keyFn, onKeyChanged);
+          scope.$watch(link.keyFn, onKeyChanged, true);
           scope.$watch(modelFn, onModelChanged);
 
 
@@ -144,7 +144,7 @@ angular
                 clearFn.assign(scope, false);
               }
             }
-            if (emptyAttr) {
+            if (emptyAttr && emptyFn(scope)) {
               var empty = createEmptyItem(scope, opt, emptyFn);
               items = Array.prototype.slice.call(items);
               items.unshift(empty);

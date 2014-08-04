@@ -42,10 +42,6 @@ angular
           var def = $q.defer();
           $timeout(function() {
             var items = angular.copy(authorsToBooks[author]);
-            items.unshift({
-              isbn: undefined,
-              title: 'Please select a book...'
-            });
             def.resolve(items);
           }, 500);
           return def.promise;
