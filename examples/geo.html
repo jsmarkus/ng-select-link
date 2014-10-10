@@ -21,6 +21,7 @@
         ng-select-link-item="fullCity"
         ng-select-link-empty="'Select city...'"
         ng-select-link-is-clear="thereIsNoCities"
+        ng-select-link-on-reset="onCitiesReset()"
         ></select>
 
     <p ng-if="thereIsNoCities"><strong>No cities available in {{fullState.name}}</strong></p>

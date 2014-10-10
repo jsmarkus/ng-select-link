@@ -11,6 +11,10 @@ angular
         $scope.selectedState = '2347591';
         $scope.selectedCity = '2459115';
 
+        $scope.onCitiesReset = function() {
+          console.log('cities reset');
+        };
+
         $scope.getStates = function() {
           return yql('select * from geo.states where place="United States"', 'place');
         };

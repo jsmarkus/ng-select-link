@@ -70,10 +70,13 @@ angular
         return undefined;
       }
 
-      function verifyIntegrity(scope, opt, items, modelFn) {
+      function verifyIntegrity(scope, opt, items, modelFn, onReset) {
         var item = findItem(scope, opt, modelFn);
         if (!item) {
           modelFn.assign(scope, undefined);
+          if (onReset) {
+            onReset.call(scope);
+          }
         }
       }
 
@@ -114,6 +117,14 @@ angular
           var clearAttr = attrs.ngSelectLinkIsClear;
           var clearFn = $parse(clearAttr);
 
+          var onResetAttr = attrs.ngSelectLinkOnReset;
+          var onReset;
+          if (onResetAttr) {
+            onReset = function() {
+              scope.$eval(onResetAttr);
+            };
+          }
+
           scope.$watch(link.keyFn, onKeyChanged, true);
           scope.$watch(modelFn, onModelChanged);
 
@@ -150,7 +161,7 @@ angular
               items.unshift(empty);
             }
             opt.valuesFn.assign(scope, items);
-            verifyIntegrity(scope, opt, items, modelFn);
+            verifyIntegrity(scope, opt, items, modelFn, onReset);
             if (fullAttr) {
               fillItem(scope, opt, modelFn, fullFn);
             }
