@@ -10,9 +10,17 @@
         ng-options="author.id as author.name for author in authors"
         ></select>
 
+<!--       <select
+        ng-model="selectedBook"
+        ng-options="book.isbn as book.title for book in books"
+        ng-select-link="getBooksByAuthor(selectedAuthor)"
+        ng-select-link-empty="'Please select a book...'"
+        ></select>
+ -->
       <select
         ng-model="selectedBook"
         ng-options="book.isbn as book.title for book in books"
+        ng-select-link-options="book.isbn for book in books"
         ng-select-link="getBooksByAuthor(selectedAuthor)"
         ng-select-link-empty="'Please select a book...'"
         ></select>

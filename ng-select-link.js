@@ -99,7 +99,7 @@ angular
         link: function(scope, element, attrs) {
           var loadingCounter = 0;
 
-          var optionsAttr = attrs.ngOptions;
+          var optionsAttr = attrs.ngSelectLinkOptions || attrs.ngOptions;
           var opt = parseOptions(optionsAttr);
 
           var linkAttr = attrs.ngSelectLink;
