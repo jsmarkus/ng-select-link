@@ -37,7 +37,7 @@ angular
         $scope.authors = authors;
 
         $scope.selectedAuthors = [];
-        $scope.selectedBooks = [];
+        // $scope.selectedBooks = [];
 
         $scope.getBooksByAuthors = function(authors) {
           var def = $q.defer();

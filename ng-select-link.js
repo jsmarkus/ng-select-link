@@ -66,7 +66,7 @@ angular
       }
 
       function findItemList(scope, opt, modelFn) {
-        var model = modelFn(scope);
+        var model = modelFn(scope) || [];
 
         var items = opt.valuesFn(scope);
         if (!items) {
