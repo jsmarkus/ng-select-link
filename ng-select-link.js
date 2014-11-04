@@ -52,32 +52,78 @@ angular
         };
       }
 
-      function findItem(scope, opt, modelFn) {
+      function arrayToMap(arr) {
+        return arr.reduce(function(map, item) {
+          map[item] = 1;
+          return map;
+        }, {});
+      }
+
+      function getItemValue(opt, item) {
+        var context = {};
+        context[opt.valueName] = item;
+        return opt.valueFn(context);
+      }
+
+      function findItemList(scope, opt, modelFn) {
         var model = modelFn(scope);
+
         var items = opt.valuesFn(scope);
         if (!items) {
-          return;
+          return [];
         }
-        var context = {};
+
+        var found = items.filter(function(item) {
+          var val = getItemValue(opt, item);
+          return -1 !== model.indexOf(val);
+        });
+
+        return found;
+      }
+
+      function findItem(scope, opt, modelFn) {
+        var model = modelFn(scope);
+
+        var items = opt.valuesFn(scope);
+        if (!items) {
+          return undefined;
+        }
+
         for (var i = 0; i < items.length; i++) {
           var item = items[i];
-          context[opt.valueName] = item;
-          var val = opt.valueFn(context);
-          if (val === model) {
+          if (getItemValue(opt, item) === model) {
             return item;
           }
         }
+
         return undefined;
       }
 
-      function verifyIntegrity(scope, opt, items, modelFn, onReset) {
-        var item = findItem(scope, opt, modelFn);
-        if (!item) {
-          modelFn.assign(scope, undefined);
+      function arrayIntersection(arr0, arr1) {
+        return arr0.filter(function(item) {
+          return -1 !== arr1.indexOf(item);
+        });
+      }
+
+      function verifyIntegrity(scope, opt, items, modelFn, multiple, onReset) {
+        if (multiple) {
+          var chosenItems = findItemList(scope, opt, modelFn).map(getItemValue.bind(null, opt));
+          var prevItems = modelFn(scope);
+          var newModel = arrayIntersection(chosenItems, prevItems);
+          modelFn.assign(scope, newModel);
           if (onReset) {
             onReset.call(scope);
           }
+        } else {
+          var item = findItem(scope, opt, modelFn);
+          if (!item) {
+            modelFn.assign(scope, undefined);
+            if (onReset) {
+              onReset.call(scope);
+            }
+          }
         }
+
       }
 
       function fillItem(scope, opt, modelFn, fullFn) {
@@ -116,6 +162,8 @@ angular
 
           var clearAttr = attrs.ngSelectLinkIsClear;
           var clearFn = $parse(clearAttr);
+
+          var multipleAttr = attrs.hasOwnProperty('ngSelectLinkMultiple') || attrs.multiple;
 
           var onResetAttr = attrs.ngSelectLinkOnReset;
           var onReset;
@@ -161,7 +209,7 @@ angular
               items.unshift(empty);
             }
             opt.valuesFn.assign(scope, items);
-            verifyIntegrity(scope, opt, items, modelFn, onReset);
+            verifyIntegrity(scope, opt, items, modelFn, multipleAttr, onReset);
             if (fullAttr) {
               fillItem(scope, opt, modelFn, fullFn);
             }

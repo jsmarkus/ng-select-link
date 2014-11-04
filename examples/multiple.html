@@ -1,0 +1,30 @@
+<html>
+<head>
+    <title></title>
+</head>
+<body ng-app="demo">
+    <div ng-controller="DemoCtrl">
+
+      <select
+        multiple
+        ng-model="selectedAuthors"
+        ng-options="author.id as author.name for author in authors"
+      ></select>
+
+      <select
+        multiple
+        ng-model="selectedBooks"
+        ng-options="book.isbn as book.title for book in books"
+        ng-select-link="getBooksByAuthors(selectedAuthors)"
+      ></select>
+
+    <p>Selected authors IDs are: {{selectedAuthors}}</p>
+    <p>Selected books ISBNs are: {{selectedBooks}}</p>
+
+    </div>
+
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../ng-select-link.js"></script>
+    <script src="multiple.js"></script>
+</body>
+</html>
