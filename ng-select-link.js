@@ -151,7 +151,8 @@ angular
           var linkAttr = attrs.ngSelectLink;
           var link = parseLink(linkAttr);
 
-          var modelAttr = attrs.ngModel;
+          var modelAttrName = attrs.ngSelectLinkModelAttr || 'ngModel';
+          var modelAttr = attrs[modelAttrName];
           var modelFn = $parse(modelAttr);
 
           var fullAttr = attrs.ngSelectLinkItem;
